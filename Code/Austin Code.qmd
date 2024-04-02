@@ -1,0 +1,13 @@
+---
+title: "Mid-term project instructions"
+author: "Austin Winkler"
+format:
+  html:
+    code-fold: false
+    embed-resources: true
+    toc: true
+    number-sections: true
+    theme: cerulean
+---
+
+

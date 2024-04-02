@@ -1,0 +1,15 @@
+---
+title: "Mid-term project instructions"
+author: "Taranjeet Sodhi"
+format:
+  html:
+    code-fold: false
+    embed-resources: true
+    toc: true
+    number-sections: true
+    theme: cerulean
+---
+
+
+
+
