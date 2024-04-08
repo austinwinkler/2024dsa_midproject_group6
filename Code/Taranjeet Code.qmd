@@ -8,7 +8,49 @@ format:
     toc: true
     number-sections: true
     theme: cerulean
+    
+    
+    
+    
 ---
+```{r setup}
+# Loading packages
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("openxlsx")
+
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(janitor)
+
+
+
+library(tidyverse) # for data wrangling and plotting
+library(openxlsx)
+```
+```{r}
+data <- read.csv("../Data/Midville_Stats.csv")
+
+data
+
+```
+N fertilizer rates: 0,60,120,180,240,300,360,420
+
+# Wrangling
+```{r}
+data_w <- data %>%
+  clean_names()%>%
+  dplyr::select(plot, nrate_kgha, yield_kgha)
+
+data_w
+```
+# summary
+```{r}
+summary(data_w)
+```
 
 
 
