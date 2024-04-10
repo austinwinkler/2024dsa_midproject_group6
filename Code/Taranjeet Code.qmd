@@ -20,12 +20,14 @@ install.packages("tidyr")
 install.packages("dplyr")
 install.packages("ggplot2")
 install.packages("openxlsx")
-
+install.packages("car")
+install.packages("broom")
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(janitor)
-
+library("car")
+library("broom")
 
 
 library(tidyverse) # for data wrangling and plotting
@@ -43,7 +45,8 @@ N fertilizer rates: 0,60,120,180,240,300,360,420
 ```{r}
 data_w <- data %>%
   clean_names()%>%
-  dplyr::select(plot, nrate_kgha, yield_kgha)
+  dplyr::select(plot, nrate_kgha, yield_kgha)%>%
+  mutate(trtnum=1:nrow(.))
 
 data_w
 ```
@@ -52,6 +55,90 @@ data_w
 summary(data_w)
 ```
 
+```{r}
+ggplot(data_w, aes(x = nrate_kgha, 
+                    y = yield_kgha,
+                    color = nrate_kgha)) +
+  geom_boxplot() +
+  geom_jitter() +
+  theme(legend.position = "none")
 
 
 
+```
+
+```{r model}
+# Changing to sum-to-zero contrast
+options(contrasts = c("contr.sum", "contr.poly"))
+
+# Model fitting
+yield_model <-lm(yield_kgha~nrate_kgha,
+              data=data_w)
+
+yield_model
+# Summary
+summary(yield_model)
+```
+
+```{r ANOVA}
+Anova(yield_model, type=3)
+```
+# Linear model assumptions  
+## Extracting residuals
+First, let's extract our model residuals, and also create studentized residuals.  
+
+```{r rcbd_resid}
+rcbd_resid <- augment(yield_model) %>%
+  mutate(.studresid=rstudent(yield_model))
+
+rcbd_resid
+```
+Now, linear model assumptions:  
+
+- Residual independence (no pattern)  
+- Residual variance homogeneity (homoscedasticity)  
+- Residual normality (discuss this!)  
+- Outlier detection
+
+
+1. Independence 
+```{r }
+ggplot(rcbd_resid, aes(x=.fitted, y=.studresid))+
+  geom_hline(yintercept = 0, color="red")+
+  geom_point(shape = 21,
+             fill = "purple", 
+             size = 3,
+             alpha = .7)+
+  #geom_smooth()+
+  geom_hline(yintercept = c(-3,3), color = "red")+
+  theme_bw()
+```
+2. Residual Homoscedascity 
+
+
+```{r }
+ggplot(rcbd_resid, aes(x=.fitted, y=.studresid))+
+  geom_hline(yintercept = 0, color="red")+
+  geom_point(shape = 21,
+             fill = "purple", 
+             size = 3,
+             alpha = .7)+
+  geom_smooth()+
+  geom_hline(yintercept = c(-3,3), color = "red")+
+  theme_bw()
+
+```
+3. Residual Normality
+
+```{r}
+ggplot(rcbd_resid, aes(sample=.studresid))+
+  stat_qq(  shape = 21,
+            fill = "purple", 
+            size = 3,
+            alpha = .7
+  )+
+  stat_qq_line()+
+  labs(x = "Theoretical quantile",
+       y = "Sample quantile")+
+  theme_bw()
+```
