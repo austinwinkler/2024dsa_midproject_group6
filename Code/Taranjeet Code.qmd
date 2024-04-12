@@ -22,12 +22,14 @@ install.packages("ggplot2")
 install.packages("openxlsx")
 install.packages("car")
 install.packages("broom")
+install.packages("emmeans")
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(janitor)
 library("car")
 library("broom")
+library(emmeans)
 
 
 library(tidyverse) # for data wrangling and plotting
@@ -142,3 +144,36 @@ ggplot(rcbd_resid, aes(sample=.studresid))+
        y = "Sample quantile")+
   theme_bw()
 ```
+
+
+```{r}
+ggplot(rcbd_resid, aes(x=.studresid))+
+  geom_density(color = "black",
+               fill = "purple",
+               alpha = .7)+
+  scale_x_continuous(breaks = c(-3,0,3), limits = c(-3,3))+
+  theme_bw()
+
+
+```
+
+# Residual outliers 
+```{r}
+ggplot(rcbd_resid, aes(x=.fitted, y=.studresid))+
+  geom_hline(yintercept = 0, color="red")+
+  geom_point(shape = 21,
+             fill = "purple", 
+             size = 3,
+             alpha = .7)+
+  geom_smooth()+
+  geom_hline(yintercept = c(-3,3), color = "red")+
+  theme_bw()
+
+```
+# model means 
+```{r interaction means all}
+rcbd_means_all <-emmeans(rcbd_resid, ~nrate_kgha:krate_kgha)
+
+rcbd_means_all
+```
+
