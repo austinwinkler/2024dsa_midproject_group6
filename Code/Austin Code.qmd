@@ -11,3 +11,94 @@ format:
 ---
 
 
+```{r}
+# Load necessary libraries
+install.packages("lme4")
+library(lme4)
+```
+
+```{r}
+# Read data
+IHdata <- read.csv("../Data/Iron_Horse_Stats_2.csv")
+
+IHdata
+```
+
+```{r}
+# One-way ANOVA
+model <- aov(yield_buac ~ Nrate_lbac, data = data)
+summary(model)
+
+# Check assumptions with plots
+par(mfrow = c(2, 2))
+plot(model)
+
+```
+Residuals vs. Fitted: To see if there are any obvious patterns (indicating non-linearity) or non-constant variance of residuals (indicating heteroscedasticity).
+Normal Q-Q: To check if the residuals are approximately normally distributed.
+Scale-Location (also called Spread-Location): To check for homoscedasticity.
+Residuals vs. Leverage: To check for influential outliers.
+
+Generalized Additive Models (GAM)
+```{r}
+#install.packages("mgcv")
+#library(mgcv)
+
+# Assuming yield_buac is your response and Nrate_lbac is a continuous predictor
+gam_model <- gam(yield_buac ~ s(Nrate_lbac), data = IHdata)
+summary(gam_model)
+
+
+```
+Quantile Regression
+```{r}
+install.packages("quantreg")
+library(quantreg)
+
+# Fit a quantile regression model for the median (0.5 quantile)
+qr_model <- rq(yield_buac ~ Nrate_lbac, data = IHdata, tau = 0.5)
+summary(qr_model)
+
+```
+
+Machine Learning Models
+```{r}
+install.packages("randomForest")
+library(randomForest)
+
+# Fit a random forest model
+rf_model <- randomForest(yield_buac ~ ., data = IHdata)
+print(rf_model)
+
+```
+
+Covariance Analysis (ANCOVA)
+```{r}
+# Fit an ANCOVA model
+ancova_model <- aov(yield_buac ~ Nrate_lbac + another_predictor, data = IHdata)
+summary(ancova_model)
+
+```
+
+Repeated Measures ANOVA
+```{r}
+install.packages("ez")
+library(ez)
+
+# Fit a repeated measures ANOVA
+# Assuming you have a 'subject' identifier and a 'time' factor with repeated measures
+rm_anova_model <- ezANOVA(data = IHdata,
+                          dv = .(yield_buac),
+                          wid = .(subject),
+                          within = .(time),
+                          detailed = TRUE)
+print(rm_anova_model)
+
+```
+
+
+
+
+
+
+
