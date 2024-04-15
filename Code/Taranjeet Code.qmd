@@ -23,6 +23,7 @@ install.packages("openxlsx")
 install.packages("car")
 install.packages("broom")
 install.packages("emmeans")
+install.packages("multcomp")
 library(tidyr)
 library(dplyr)
 library(ggplot2)
@@ -30,6 +31,7 @@ library(janitor)
 library("car")
 library("broom")
 library(emmeans)
+library(multcomp)
 
 
 library(tidyverse) # for data wrangling and plotting
@@ -47,8 +49,11 @@ N fertilizer rates: 0,60,120,180,240,300,360,420
 ```{r}
 data_w <- data %>%
   clean_names()%>%
-  dplyr::select(plot, nrate_kgha, yield_kgha)%>%
-  mutate(trtnum=1:nrow(.))
+  mutate(trtnum=1:nrow(.)) %>%
+  slice(-49) %>%
+  mutate(rep = factor(rep(1:6, times = 8)))%>%
+  dplyr::select(plot, rep, nrate_kgha, yield_kgha)%>%
+  mutate(nrate_kgha = factor(nrate_kgha))
 
 data_w
 ```
@@ -74,7 +79,7 @@ ggplot(data_w, aes(x = nrate_kgha,
 options(contrasts = c("contr.sum", "contr.poly"))
 
 # Model fitting
-yield_model <-lm(yield_kgha~nrate_kgha,
+yield_model <-lm(yield_kgha~ rep + nrate_kgha,
               data=data_w)
 
 yield_model
@@ -171,9 +176,20 @@ ggplot(rcbd_resid, aes(x=.fitted, y=.studresid))+
 
 ```
 # model means 
+# pairwise comparison 
 ```{r interaction means all}
-rcbd_means_all <-emmeans(rcbd_resid, ~nrate_kgha:krate_kgha)
+rcbd_means_all <-emmeans(yield_model, ~nrate_kgha)
 
 rcbd_means_all
 ```
+# pairwise comparison 
 
+```{r interaction pwc all}
+rcbd_cld_all <- cld(rcbd_means_all, 
+                   reversed=T, 
+                   adjust="none",
+               Letters=letters,
+               alpha = 0.05)
+
+rcbd_cld_all
+```
