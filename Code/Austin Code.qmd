@@ -41,11 +41,11 @@ Residuals vs. Leverage: To check for influential outliers.
 
 Generalized Additive Models (GAM)
 ```{r}
-#install.packages("mgcv")
-#library(mgcv)
+install.packages("mgcv")
+library(mgcv)
 
 # Assuming yield_buac is your response and Nrate_lbac is a continuous predictor
-gam_model <- gam(yield_buac ~ s(Nrate_lbac), data = IHdata)
+gam_model <- gam(yield_buac ~ s(Nrate_lbac), data = data)
 summary(gam_model)
 
 
@@ -56,7 +56,7 @@ install.packages("quantreg")
 library(quantreg)
 
 # Fit a quantile regression model for the median (0.5 quantile)
-qr_model <- rq(yield_buac ~ Nrate_lbac, data = IHdata, tau = 0.5)
+qr_model <- rq(yield_buac ~ Nrate_lbac, data = data, tau = 0.5)
 summary(qr_model)
 
 ```
@@ -67,7 +67,7 @@ install.packages("randomForest")
 library(randomForest)
 
 # Fit a random forest model
-rf_model <- randomForest(yield_buac ~ ., data = IHdata)
+rf_model <- randomForest(yield_buac ~ ., data = data)
 print(rf_model)
 
 ```
