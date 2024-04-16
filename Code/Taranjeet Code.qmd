@@ -193,3 +193,43 @@ rcbd_cld_all <- cld(rcbd_means_all,
 
 rcbd_cld_all
 ```
+
+```{r selected pwc}
+rcbd_cld_selected <- rcbd_cld_all%>%
+  as.data.frame()%>%
+  mutate(letter=trimws(.group))
+  
+
+rcbd_cld_selected
+```
+# Final plot
+```{r rcbd final plot}
+
+ggplot(mapping = aes(fill = nrate_kgha))+
+  geom_boxplot(data=yield_model,
+               aes(x=nrate_kgha,
+                  y=yield_kgha),
+               alpha=.8
+                    )+
+  geom_jitter(data=yield_model,
+              aes(x= nrate_kgha,
+                  y=yield_kgha
+                  ),
+              shape=21,
+              alpha=.6,
+              size=3
+              )+
+  geom_label(data=rcbd_cld_selected,
+             aes(x= nrate_kgha,
+                 y= emmean,
+                 label=letter),
+            fill="grey"
+                 )+
+  scale_fill_viridis_d()+
+  theme(legend.position = "none",
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y=element_blank()
+        
+        )
+  
+```
