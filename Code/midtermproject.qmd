@@ -60,6 +60,232 @@ Experimental Design: Our study meticulously examined nitrogen (N) fertilizer app
 ## Statistical analysis  
 Describe here your statistical analysis, including what type of ANOVA model you ran (based on the design above), what was your response variable, what were your explanatory variables and how were the explanatory variables treated (random or fixed). Provide your alpha level. Explain which function from which package you used to analyze this data. Explain how you checked linear model assumptions and whether or not they were met. Overall, make sure you explain in sufficient detail that, if given your data, a knowledgeable person would be able to reproduce your analysis exactly.  
 
+
+```{r setup}
+# Loading packages
+install.packages("tidyverse")
+install.packages("tidyr")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("openxlsx")
+install.packages("car")
+install.packages("broom")
+install.packages("emmeans")
+install.packages("multcomp")
+install.packages("rlang")
+#library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(janitor)
+library("car")
+#library("broom")
+library(emmeans)
+library(multcomp)
+
+
+library(tidyverse) # for data wrangling and plotting
+library(openxlsx)
+```
+
+
+```{r}
+data <- read.csv("../Data/Midville_Stats.csv")
+
+data
+
+```
+N fertilizer rates: 0,60,120,180,240,300,360,420
+
+# Wrangling
+```{r}
+data_w <- data %>%
+  clean_names()%>%
+  mutate(trtnum=1:nrow(.)) %>%
+  slice(-49) %>%
+  mutate(rep = factor(rep(1:6, times = 8)))%>%
+  dplyr::select(plot, rep, nrate_kgha, yield_kgha)%>%
+  mutate(nrate_kgha = factor(nrate_kgha))
+
+data_w
+```
+# summary
+```{r}
+summary(data_w)
+```
+
+```{r}
+ggplot(data_w, aes(x = nrate_kgha, 
+                    y = yield_kgha,
+                    color = nrate_kgha)) +
+  geom_boxplot() +
+  geom_jitter() +
+  theme(legend.position = "none")
+
+
+
+```
+
+```{r model}
+# Changing to sum-to-zero contrast
+options(contrasts = c("contr.sum", "contr.poly"))
+
+# Model fitting
+yield_model <-lm(yield_kgha~ rep + nrate_kgha,
+              data=data_w)
+
+yield_model
+# Summary
+summary(yield_model)
+```
+
+```{r ANOVA}
+Anova(yield_model, type=3)
+```
+# Linear model assumptions  
+## Extracting residuals
+First, let's extract our model residuals, and also create studentized residuals.  
+
+```{r rcbd_resid}
+rcbd_resid <- augment(yield_model) %>%
+  mutate(.studresid=rstudent(yield_model))
+
+rcbd_resid
+```
+Now, linear model assumptions:  
+
+- Residual independence (no pattern)  
+- Residual variance homogeneity (homoscedasticity)  
+- Residual normality (discuss this!)  
+- Outlier detection
+
+
+1. Independence 
+```{r }
+ggplot(rcbd_resid, aes(x=.fitted, y=.studresid))+
+  geom_hline(yintercept = 0, color="red")+
+  geom_point(shape = 21,
+             fill = "purple", 
+             size = 3,
+             alpha = .7)+
+  #geom_smooth()+
+  geom_hline(yintercept = c(-3,3), color = "red")+
+  theme_bw()
+```
+2. Residual Homoscedascity 
+
+
+```{r }
+ggplot(rcbd_resid, aes(x=.fitted, y=.studresid))+
+  geom_hline(yintercept = 0, color="red")+
+  geom_point(shape = 21,
+             fill = "purple", 
+             size = 3,
+             alpha = .7)+
+  geom_smooth()+
+  geom_hline(yintercept = c(-3,3), color = "red")+
+  theme_bw()
+
+```
+3. Residual Normality
+
+```{r}
+ggplot(rcbd_resid, aes(sample=.studresid))+
+  stat_qq(  shape = 21,
+            fill = "purple", 
+            size = 3,
+            alpha = .7
+  )+
+  stat_qq_line()+
+  labs(x = "Theoretical quantile",
+       y = "Sample quantile")+
+  theme_bw()
+```
+
+
+```{r}
+ggplot(rcbd_resid, aes(x=.studresid))+
+  geom_density(color = "black",
+               fill = "purple",
+               alpha = .7)+
+  scale_x_continuous(breaks = c(-3,0,3), limits = c(-3,3))+
+  theme_bw()
+
+
+```
+
+# Residual outliers 
+```{r}
+ggplot(rcbd_resid, aes(x=.fitted, y=.studresid))+
+  geom_hline(yintercept = 0, color="red")+
+  geom_point(shape = 21,
+             fill = "purple", 
+             size = 3,
+             alpha = .7)+
+  geom_smooth()+
+  geom_hline(yintercept = c(-3,3), color = "red")+
+  theme_bw()
+
+```
+# model means 
+# pairwise comparison 
+```{r interaction means all}
+rcbd_means_all <-emmeans(yield_model, ~nrate_kgha)
+
+rcbd_means_all
+```
+# pairwise comparison 
+
+```{r interaction pwc all}
+rcbd_cld_all <- cld(rcbd_means_all, 
+                   reversed=T, 
+                   adjust="none",
+               Letters=letters,
+               alpha = 0.05)
+
+rcbd_cld_all
+```
+
+```{r selected pwc}
+rcbd_cld_selected <- rcbd_cld_all%>%
+  as.data.frame()%>%
+  mutate(letter=trimws(.group))
+  
+
+rcbd_cld_selected
+```
+# Final plot
+```{r rcbd final plot}
+
+ggplot(mapping = aes(fill = nrate_kgha))+
+  geom_boxplot(data=yield_model,
+               aes(x=nrate_kgha,
+                  y=yield_kgha),
+               alpha=.8
+                    )+
+  geom_jitter(data=yield_model,
+              aes(x= nrate_kgha,
+                  y=yield_kgha
+                  ),
+              shape=21,
+              alpha=.6,
+              size=3
+              )+
+  geom_label(data=rcbd_cld_selected,
+             aes(x= nrate_kgha,
+                 y= emmean,
+                 label=letter),
+            fill="grey"
+                 )+
+  scale_fill_viridis_d()+
+  theme(legend.position = "none",
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y=element_blank()
+        
+        )
+  
+```
+
+
 # Results  
 Here is where the coding is going to happen, and it will be completely up to you. Include under this section as many sub-sections (using ##) and as many chunks needed to create the analytical workflow for your analysis, starting at loading packages and data, wrangling, EDA, modeling, assumptions checking, ANOVA table, means, pairwise comparisons, and final publication-quality plot.  
 
