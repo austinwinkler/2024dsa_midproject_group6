@@ -63,7 +63,7 @@ Experimental Design: Our study meticulously examined nitrogen (N) fertilizer app
 ## Statistical analysis  
 Describe here your statistical analysis, including what type of ANOVA model you ran (based on the design above), what was your response variable, what were your explanatory variables and how were the explanatory variables treated (random or fixed). Provide your alpha level. Explain which function from which package you used to analyze this data. Explain how you checked linear model assumptions and whether or not they were met. Overall, make sure you explain in sufficient detail that, if given your data, a knowledgeable person would be able to reproduce your analysis exactly. 
 
-
+The ANOVA model that was ran was the type 3 ANOVA model. The response variable yield. The explanatory variables was the different Nitrogen rates. The explanatory variables were treated with a randomized complete block design. The alpha level was 0.05. The LMER function was used from the LME4 package. The following condition were checked: residual independence, homoscedascity, redidual nomadity, and residual outliers. All of those conditions were met.
 
 
 # Results  
