@@ -285,6 +285,7 @@ ggplot(mapping = aes(fill = nrate_kgha))+
         )
   
 ```
+This graph shows the variation in crop yield (kg/ha) against nitrogen application rates (kg/ha). There's a noticeable trend of increasing yield with rising nitrogen rates up to a threshold, after which yields plateau, indicating an optimal nitrogen application range. The box plots reveal a widening distribution of yields at higher nitrogen levels, highlighting the variability and potential risk of exceeding the optimal nitrogen application rate.
 
 # Results  
 Here is where the coding is going to happen, and it will be completely up to you. Include under this section as many sub-sections (using ##) and as many chunks needed to create the analytical workflow for your analysis, starting at loading packages and data, wrangling, EDA, modeling, assumptions checking, ANOVA table, means, pairwise comparisons, and final publication-quality plot.  
