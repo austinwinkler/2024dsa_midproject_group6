@@ -41,6 +41,9 @@ Our research seeks to fill this gap by evaluating the current N recommendation m
 # Hypothesis and objectives  
 Describe here your hypothesis, followed by your objectives. Make sure your hypothesis are testable and bold, and objectives are clear.  
 
+We hypothesize that corn yield responses to nitrogen application rates above 201 kg N/ha will not be significantly different, suggesting that the Agronomic Optimum Nitrogen Rate (AONR) lies at or below this threshold. 
+This study aims to demonstrate that a nitrogen recommendation model integrating regional specificity, economic considerations, and management practices will provide more precise and sustainable nitrogen rates without a statistically significant yield benefit from higher applications.
+
 # Material and Methods  
 Describe here your overall material and methods as it pertains to the analysis you will conduct, including study description, site/setup description, what equipment was used, etc. just like you would in a paper. Make sure to clearly explain what was measured and how.
 
@@ -282,7 +285,6 @@ ggplot(mapping = aes(fill = nrate_kgha))+
         )
   
 ```
-
 
 # Results  
 Here is where the coding is going to happen, and it will be completely up to you. Include under this section as many sub-sections (using ##) and as many chunks needed to create the analytical workflow for your analysis, starting at loading packages and data, wrangling, EDA, modeling, assumptions checking, ANOVA table, means, pairwise comparisons, and final publication-quality plot.  
