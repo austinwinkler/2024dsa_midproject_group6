@@ -39,17 +39,7 @@ Normal Q-Q: To check if the residuals are approximately normally distributed.
 Scale-Location (also called Spread-Location): To check for homoscedasticity.
 Residuals vs. Leverage: To check for influential outliers.
 
-Generalized Additive Models (GAM)
-```{r}
-install.packages("mgcv")
-library(mgcv)
 
-# Assuming yield_buac is your response and Nrate_lbac is a continuous predictor
-gam_model <- gam(yield_buac ~ s(Nrate_lbac), data = data)
-summary(gam_model)
-
-
-```
 Quantile Regression
 ```{r}
 install.packages("quantreg")
@@ -61,41 +51,11 @@ summary(qr_model)
 
 ```
 
-Machine Learning Models
+
+
 ```{r}
-install.packages("randomForest")
-library(randomForest)
-
-# Fit a random forest model
-rf_model <- randomForest(yield_buac ~ ., data = data)
-print(rf_model)
-
+Anova(yield_model, type=3)
 ```
-
-Covariance Analysis (ANCOVA)
-```{r}
-# Fit an ANCOVA model
-ancova_model <- aov(yield_buac ~ Nrate_lbac + another_predictor, data = IHdata)
-summary(ancova_model)
-
-```
-
-Repeated Measures ANOVA
-```{r}
-install.packages("ez")
-library(ez)
-
-# Fit a repeated measures ANOVA
-# Assuming you have a 'subject' identifier and a 'time' factor with repeated measures
-rm_anova_model <- ezANOVA(data = IHdata,
-                          dv = .(yield_buac),
-                          wid = .(subject),
-                          within = .(time),
-                          detailed = TRUE)
-print(rm_anova_model)
-
-```
-
 
 
 
