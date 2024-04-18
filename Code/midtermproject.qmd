@@ -73,16 +73,14 @@ install.packages("broom")
 install.packages("emmeans")
 install.packages("multcomp")
 install.packages("rlang")
-#library(tidyr)
+library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(janitor)
 library("car")
-#library("broom")
+library("broom")
 library(emmeans)
 library(multcomp)
-
-
 library(tidyverse) # for data wrangling and plotting
 library(openxlsx)
 ```
